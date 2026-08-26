@@ -1,34 +1,18 @@
 # BERT-style text classification
 
-Transformer **encoder** + **[CLS]** token → class logits.
+Transformer **encoder** + **[CLS]** → 2-way sentiment on SST-2.
 
-Not `BertForSequenceClassification` from Hugging Face. The encoder and the classification head are written in this repo.
+> Status: **encoder + CLS head + SST-2 notes in.** Vocab / CLS-prepending / train loop next.
 
-> Status: **repo is up.** Model / train loop / dataset / screenshots incoming.
+## Data
 
-## Idea
+`sst2_train.csv` — 67349 rows, `sentence` + `label` (0/1).
 
-BERT-style models pack the whole sentence into one vector: a learned `[CLS]` token at the front. After the encoder stack, that position is the sentence embedding. A linear layer turns it into class scores.
+## Model
 
-```
-[CLS] token1 token2 ... tokenN [SEP?]
-  |
-  v
-encoder (self-attn + FFN, × N layers)
-  |
-  v
-hidden[0]  →  linear  →  logits
-```
+[`src/model.py`](src/model.py): embed + PE + encoder → `hidden[:, 0]` (CLS) → Linear to 2 classes.
 
-## Layout
-
-| path | |
-|---|---|
-| `src/` | encoder, CLS head, data |
-| `notebooks/` | walkthrough |
-| `data/` | dataset notes |
-| `results/` | loss, accuracy, sample preds |
-| `assets/screenshots/` | notebook / train captures |
+`max_seq_len = 64`, PAD = 0.
 
 ## License
 
